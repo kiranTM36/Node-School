@@ -1,0 +1,20 @@
+students 
+    students Schema : 
+        1. Name
+        2. Phone
+        3. marks : [nepali, math, science, account, english]
+        4. total : calculated on the basis of Marks
+        5. status : if all Marks is greater than 40 Pass otherwise Fail
+        6. email : should be unique
+        7. password 
+        8. class
+        9. rollNo
+
+teacher
+    teacher Schema : 
+        1. Name
+        2. Phone
+        3. salary
+        4. email
+        5. password
+        6. subject
