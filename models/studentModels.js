@@ -65,6 +65,7 @@ const studentSchema = new mongoose.Schema({
 studentSchema.index ({class : 1, rollNo : 1},{unique : true})
 
 studentSchema.pre('save', async function(){
+
     const marks = this.marks;
 
     this.status = (marks.math >= 40 &&
@@ -74,16 +75,17 @@ studentSchema.pre('save', async function(){
                    marks.account >= 40)
                    ? 'pass'
                    : 'fail';
+
     this.total = marks.nepali + marks.account + marks.english + marks.science + marks.math;
-    
-    this.percentage = `${(this.total*100)/500}%`
 
-    // if(this.isModified('password')){
-    //     const salt = await bcrypt.genSalt(10)
-    //     const hashPass = await bcrypt.hash(this.pasword, salt)
-    // }
+    this.percentage = `${(this.total * 100) / 500}%`
 
-    // next()
+    if(!this.isModified('password')) return
+
+    const salt = await require('bcrypt').genSalt(10)
+    const hashPass = await require('bcrypt').hash(this.password, salt)
+
+    this.password = hashPass
 })
 
 module.exports = mongoose.model('Student' , studentSchema);

@@ -3,7 +3,7 @@ const teacherModel = require('./../models/teacherModels')
 
 const router = express.Router()
 
-router.post('/', async(res, req) => {
+router.post('/', async(req, res) => {
     try {
         const data = req.body
         const newteacher = new teacherModel(data)
@@ -22,7 +22,7 @@ router.post('/', async(res, req) => {
     try {
         const response = await teacherModel.find()
 
-    consloe.log("Data Fetched")
+    console.log("Data Fetched")
     res.status(200).json(response)
 
     } catch (error) {
@@ -54,7 +54,7 @@ router.post('/', async(res, req) => {
     }
  })
 
- router.delete('/teacher:id', async (req, res) => {
+ router.delete('/teacher/:id', async (req, res) => {
     try {
         
         const id = req.params.id
@@ -64,7 +64,7 @@ router.post('/', async(res, req) => {
                     res.send("User not found!")
         
         }
-        consloe.log("Data Removed")
+        console.log("Data Removed")
         res.status(200).json(response)
 
     } catch (error) {
