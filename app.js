@@ -1,60 +1,38 @@
-const express = require('express')
-const passport = require('passport')
-const LocalStrategy = require('passport-local').Strategy 
+require('dotenv').config(); // Load .env variables
+const express = require('express');
+const path = require('path');
+const db = require('./db'); // MongoDB connection
 
-const db = require('./db')
-const studentRoute = require('./routes/studentRoute')
-const teacherRoute = require('./routes/teacherRoute')
-const studentModels = require('./models/studentModels')
+const studentRoutes = require('./routes/studentRoute');
+const teacherRoutes = require('./routes/teacherRoute');
 
-const app = express()
+const app = express();
+const PORT = process.env.PORT || 4444;
 
-app.use(express.json())
-app.set('view engine', 'ejs')
+// Middleware to parse JSON and URL-encoded data
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-const logTime = (req, res, next) =>{
-    console.log(`${new Date().toLocaleString()} : Request made at ${req.originalUrl}`)
-    next()
-}
+// Set view engine to EJS
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
-app.use(passport.initialize())
+// Logging middleware
+app.use((req, res, next) => {
+    console.log(`${new Date().toLocaleString()} : ${req.method} ${req.originalUrl}`);
+    next();
+});
 
-// passport strategy
-passport.use(new LocalStrategy(
-    { usernameField: 'name', passwordField: 'password' },
-    async (name, password, done)=>{
-        try {
-            const user = await studentModels.findOne({name : name})
+// Mount student and teacher routes
+app.use('/student', studentRoutes);
+app.use('/teacher', teacherRoutes);
 
-            if(!user){
-                return done(null, false, {message : "User not found"})
-            }
+// Home page route (public)
+app.get('/', (req, res) => {
+    res.render('home'); // Renders views/home.ejs
+});
 
-            const isMatchPwd = user.password === password
-
-            if(!isMatchPwd){
-                return done(null, false, {message : "Invalid Password"})
-            }
-
-            return done(null, user)
-
-        } catch (error) {
-            return done(error)
-        }
-}))
-
-const authMiddleware = passport.authenticate('local', {session:false})
-
-app.use(logTime)
-
-app.get('/', authMiddleware, (req, res) => {
-    res.render('home')
-})
-
-app.use('/student', studentRoute)
-app.use('/teacher', teacherRoute)
-
-const PORT = 4444
-app.listen(PORT ,() => {
-    console.log(`Project is Running`)
-})
+// Start server
+app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT} ✅`);
+});

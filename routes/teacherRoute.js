@@ -1,76 +1,73 @@
-const express = require('express')
-const teacherModel = require('./../models/teacherModels')
+const express = require('express');
+const teacherModel = require('./../models/teacherModels');
 
-const router = express.Router()
+const router = express.Router();
 
-router.post('/', async(req, res) => {
+// CREATE teacher
+router.post('/', async (req, res) => {
     try {
-        const data = req.body
-        const newteacher = new teacherModel(data)
-        const response = await newteacher.save()
+        const newTeacher = new teacherModel(req.body);
+        const response = await newTeacher.save();
 
-        console.log("Data Saved")
-        res.status(200).json(response)
-
+        console.log("Data saved");
+        res.status(200).json(response);
     } catch (error) {
-        console.log("Error " + error)
-        res.status(500).send('Something went Wrong')
+        console.log("Error " + error);
+        res.status(500).send('Something went wrong');
     }
- })
+});
 
- router.get('/', async(req, res) => {
+// GET all teachers
+router.get('/', async (req, res) => {
     try {
-        const response = await teacherModel.find()
-
-    console.log("Data Fetched")
-    res.status(200).json(response)
-
+        const response = await teacherModel.find();
+        console.log("Data fetched");
+        res.status(200).json(response);
     } catch (error) {
-        console.log("Error " + error)
-        res.status(500).send('Something went Wrong')
+        console.log("Error " + error);
+        res.status(500).send('Something went wrong');
     }
- })
+});
 
- router.put('/teacher/:id',async (req, res) => {
+// UPDATE teacher
+router.put('/:id', async (req, res) => {
     try {
-        const id = req.params.id
-        const data = req.body
-        const response = await teacherModel.findByIdAndUpdate(id, data, {
-            new : true,
-             runValidators : true
-        })
+        const id = req.params.id;
+        const response = await teacherModel.findByIdAndUpdate(id, req.body, {
+            new: true,
+            runValidators: true
+        });
 
-        if(!response){
-            console.log("No user Found")
-            res.send("User not found!")
+        if (!response) {
+            console.log("No user found");
+            return res.status(404).send("User not found!");
         }
 
-        console.log("Data Update")
-        res.status(200).json(response)
-
+        console.log("Data updated");
+        res.status(200).json(response);
     } catch (error) {
-        console.log("Error " + error)
-        res.status(500).send('Something went Wrong')
+        console.log("Error " + error);
+        res.status(500).send('Something went wrong');
     }
- })
+});
 
- router.delete('/teacher/:id', async (req, res) => {
+// DELETE teacher
+router.delete('/:id', async (req, res) => {
     try {
-        
-        const id = req.params.id
-        const response = await teacherModel.findByIdAndUpdate(id)
-        if(!response){
-                    console.log("No user Found")
-                    res.send("User not found!")
-        
+        const id = req.params.id;
+        const response = await teacherModel.findByIdAndDelete(id);
+
+        if (!response) {
+            console.log("No user found");
+            return res.status(404).send("User not found!");
         }
-        console.log("Data Removed")
-        res.status(200).json(response)
 
+        console.log("Data removed");
+        res.status(200).json(response);
     } catch (error) {
-        console.log("Error " + error)
-        res.status(500).send('Something went Wrong')
+        console.log("Error " + error);
+        res.status(500).send('Something went wrong');
     }
- })
+});
 
-module.exports = router
+module.exports = router;
